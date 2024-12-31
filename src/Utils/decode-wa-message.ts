@@ -2,7 +2,7 @@ import { Boom } from '@hapi/boom'
 import { Logger } from 'pino'
 import { proto } from '../../WAProto'
 import { SignalRepository, WAMessageKey } from '../Types'
-import { areJidsSameUser, BinaryNode, isJidBroadcast, isJidGroup, isJidNewsLetter, isJidStatusBroadcast, isJidUser, isLidUser } from '../WABinary'
+import { areJidsSameUser, BinaryNode, getBinaryNodeChild, isJidBroadcast, isJidGroup, isJidNewsLetter, isJidStatusBroadcast, isJidUser, isLidUser } from '../WABinary'
 import { BufferJSON, unpadRandomMax16 } from './generics'
 
 const NO_MESSAGE_FOUND_ERROR_TEXT = 'Message absent from node'
@@ -64,10 +64,6 @@ export function decodeMessageNode(
 		msgType = 'group'
 		author = participant
 		chatId = from
-	} else if(isJidNewsLetter(from)) {
-		msgType = 'newsletter'
-		author = from
-		chatId = from
 	} else if(isJidBroadcast(from)) {
 		if(!participant) {
 			throw new Boom('No participant in group message')
@@ -82,12 +78,16 @@ export function decodeMessageNode(
 
 		chatId = from
 		author = participant
+	} else if (isJidNewsLetter(from)) {
+		msgType = 'newsletter'
+		author = from
+		chatId = from
 	} else {
 		throw new Boom('Unknown message type', { data: stanza })
 	}
 
-	const fromMe = isJidNewsLetter(from) ? !!stanza.attrs?.is_sender || false : (isLidUser(from) ? isMeLid : isMe)(stanza.attrs.participant || stanza.attrs.from)
-	const pushname = stanza?.attrs?.notify
+	const fromMe = isJidNewsLetter(from) ? !!stanza.attrs?.is_sender : (isLidUser(from) ? isMeLid : isMe)(stanza.attrs.participant || stanza.attrs.from)
+	const pushname = stanza.attrs.notify
 
 	const key: WAMessageKey = {
 		remoteJid: chatId,
@@ -102,7 +102,7 @@ export function decodeMessageNode(
 		pushName: pushname,
 		broadcast: isJidBroadcast(from)
 	}
-	
+
 	if (msgType === 'newsletter') {
 		fullMessage.newsletterServerId = +stanza.attrs?.server_id
 	}
@@ -132,7 +132,29 @@ export const decryptMessageNode = (
 		author,
 		async decrypt() {
 			let decryptables = 0
-			if(Array.isArray(stanza.content)) {
+
+			async function processSenderKeyDistribution(msg: proto.IMessage) {
+				if(msg.senderKeyDistributionMessage) {
+					try {
+						await repository.processSenderKeyDistributionMessage({
+							authorJid: author,
+							item: msg.senderKeyDistributionMessage
+						})
+					} catch(err) {
+						logger.error({ key: fullMessage.key, err }, 'failed to process senderKeyDistribution')
+					}
+				}
+			}
+
+			if (isJidNewsLetter(fullMessage.key.remoteJid!)) {
+				const node = getBinaryNodeChild(stanza, 'plaintext')
+				const msg = proto.Message.decode(node?.content as Uint8Array)
+
+				await processSenderKeyDistribution(msg)
+
+				fullMessage.message = msg
+				decryptables += 1
+			} else if(Array.isArray(stanza.content)) {
 				for(const { tag, attrs, content } of stanza.content) {
 					if(tag === 'verified_name' && content instanceof Uint8Array) {
 						const cert = proto.VerifiedNameCertificate.decode(content)
@@ -140,7 +162,7 @@ export const decryptMessageNode = (
 						fullMessage.verifiedBizName = details.verifiedName
 					}
 
-					if(tag !== 'enc' && tag !== 'plaintext') {
+					if(tag !== 'enc') {
 						continue
 					}
 
@@ -148,9 +170,10 @@ export const decryptMessageNode = (
 						continue
 					}
 
+
 					decryptables += 1
 
-					let msgBuffer: Uint8Array					
+					let msgBuffer: Uint8Array
 
 					try {
 						const e2eType = attrs.type
@@ -171,26 +194,13 @@ export const decryptMessageNode = (
 								ciphertext: content
 							})
 							break
-						case undefined:
-							msgBuffer = content
-							break
 						default:
 							throw new Error(`Unknown e2e type: ${e2eType}`)
 						}
 
-						let msg: proto.IMessage = proto.Message.decode(tag === 'plaintext' ? msgBuffer : unpadRandomMax16(msgBuffer))
-						msg = msg?.deviceSentMessage?.message || msg
-
-						if(msg.senderKeyDistributionMessage) {
-							try {
-								await repository.processSenderKeyDistributionMessage({
-									authorJid: author,
-									item: msg.senderKeyDistributionMessage
-								})
-							} catch(err) {
-								logger.error({ key: fullMessage.key, err }, 'failed to decrypt message')
-								}
-						}
+						let msg: proto.IMessage = proto.Message.decode(unpadRandomMax16(msgBuffer))
+						msg = msg.deviceSentMessage?.message || msg
+						await processSenderKeyDistribution(msg)
 
 						if(fullMessage.message) {
 							Object.assign(fullMessage.message, msg)
