@@ -93,8 +93,7 @@ export function decodeMessageNode(
 		remoteJid: chatId,
 		fromMe,
 		id: msgId,
-		participant,
-		server_id: stanza.attrs?.server_id
+		participant
 	}
 
 	const fullMessage: proto.IWebMessageInfo = {
