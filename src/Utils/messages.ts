@@ -580,7 +580,7 @@ export const generateWAMessageFromContent = (
 	const timestamp = unixTimestampSeconds(options.timestamp)
 	const { quoted, userJid } = options
 
-	if(quoted && !isJidNewsletter(jid)) {
+	if(quoted && !isJidNewsLetter(jid)) {
 		const participant = quoted.key.fromMe ? userJid : (quoted.participant || quoted.key.participant || quoted.key.remoteJid)
 
 		let quotedMsg = normalizeMessageContent(quoted.message)!
@@ -615,7 +615,7 @@ export const generateWAMessageFromContent = (
 		// already not converted to disappearing message
 		key !== 'ephemeralMessage' &&
 		// newsletter not accept disappearing messages
-		!isJidNewsletter(jid)
+		!isJidNewsLetter(jid)
 	) {
 		innerMessage[key].contextInfo = {
 			...(innerMessage[key].contextInfo || {}),
