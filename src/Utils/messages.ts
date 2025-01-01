@@ -477,6 +477,9 @@ export const generateWAMessageContent = async(
 		if('text' in message) {
 			buttonsMessage.contentText = message.text
 			buttonsMessage.headerType = ButtonType.EMPTY
+		} else if('title' in message) {
+			buttonsMessage.text = message.title
+			buttonsMessage.headerType = ButtonType.TEXT
 		} else {
 			if('caption' in message) {
 				buttonsMessage.contentText = message.caption
