@@ -547,23 +547,23 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 				if(additionalNodes && additionalNodes.length > 0) {
                       (stanza.content as BinaryNode[]).push(...additionalNodes);
                 } else {
-                   if((isJidGroup(jid) || isJidUser(jid)) && (message?.viewOnceMessage ? message?.viewOnceMessage : message?.viewOnceMessageV2 ? message?.viewOnceMessageV2 : message?.viewOnceMessageV2Extension ? message?.viewOnceMessageV2Extension : message?.ephemeralMessage ? message?.ephemeralMessage : message?.templateMessage ? message?.templateMessage : message?.interactiveMessage ? message?.interactiveMessage : message?.buttonsMessage)) {
+                   if((isJidGroup(jid) || isJidUser(jid)) && (message?.viewOnceMessage ? message?.viewOnceMessage : message?.viewOnceMessageV2 ? message?.viewOnceMessageV2 : message?.viewOnceMessageV2Extension ? message?.viewOnceMessageV2Extension : message?.ephemeralMessage ? message?.ephemeralMessage : message?.templateMessage ? message?.templateMessage : message?.interactiveMessage ? message?.interactiveMessage : message?.buttonsMessage ? message?.buttonsMessage : message?.buttonsMessage)) {
                       (stanza.content as BinaryNode[]).push({
-						tag: 'biz',
-						attrs: {},
-					    content: [{
-							tag: 'interactive',
-							attrs: {
-				   				type: 'native_flow',
-			      				 v: '1'
-							},
-							content: [{
-			   					tag: 'native_flow',
-			   					attrs: { name: 'quick_reply' }
-							}]
-    					}]
-				    });
-				  }
+						  tag: 'biz',
+						  attrs: { },
+					      content: [{
+							  tag: 'interactive',
+							  attrs: {
+				   			  	   type: 'native_flow',
+			      				   v: '1'
+							  },
+							  content: [{
+			   					   tag: 'native_flow',
+			   					   attrs: { name: 'quick_reply' }
+							  }]
+    					  }]
+				      });
+				   }
                }
 
 				const buttonType = getButtonType(message)
