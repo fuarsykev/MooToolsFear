@@ -631,40 +631,6 @@ export const generateWAMessageContent = async(
 	          ...message,
 	       }	       
 	   }
-	   
-	   if('header' in message && !!message.header) {
-	       let media = {};
-	       if(message.header.location) {
-	           media = {
-	              locationMessage: WAProto.Message.LocationMessage.fromObject(message.header.location)
-	           }
-	       } else if(message.header.product) {
-	          const { imageMessage } = await prepareWAMessageMedia(
-			     { image: message.header.product.productImage },
-			     options
-		      )
-		      media = {
-		         productMesage: WAProto.Message.ProductMessage.fromObject({
-			        ...message.header,
-			        product: {
-				       ...message.header.product,
-				       productImage: imageMessage,
-			        }
-		         })
-		      }
-	       } else {
-	           media = {
-	               ...(await prepareWAMessageMedia(
-			            message.header,
-			            options,
-			       ))
-			   }
-	       }
-	       header: interactiveMessage.header = {
-	           hasMediaAttachment: media ? true : false,
-	           ...media
-	       }
-	   }
 	   m = { interactiveMessage }
 	}
 
