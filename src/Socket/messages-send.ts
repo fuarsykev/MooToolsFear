@@ -289,7 +289,8 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 		extraAttrs?: BinaryNode['attrs']
 	) => {
 		const patched = await patchMessageBeforeSending(message, jids)
-		const bytes = encodeWAMessage(patched)
+		const requiredPatched = patchMessageRequiresBeforeSending(patched, jids)
+		const bytes = encodeWAMessage(requiredPatched)
 
 		let shouldIncludeDeviceIdentity = false
 		const nodes = await Promise.all(
@@ -402,7 +403,8 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 					}
 
 					const patched = await patchMessageBeforeSending(message, devices.map(d => jidEncode(d.user, isLid ? 'lid' : 's.whatsapp.net', d.device)))
-					const bytes = encodeWAMessage(patched)
+		            const requiredPatched = patchMessageRequiresBeforeSending(patched, devices.map(d => jidEncode(d.user, isLid ? 'lid' : 's.whatsapp.net', d.device)))
+					const bytes = encodeWAMessage(requiredPatched)
 
 					const { ciphertext, senderKeyDistributionMessage } = await signalRepository.encryptGroupMessage(
 						{
