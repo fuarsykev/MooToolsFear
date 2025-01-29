@@ -508,14 +508,18 @@ export const generateWAMessageContent = async(
    } else if('inviteAdmin' in message) {
        m.newsletterAdminInviteMessage = WAProto.Message.NewsletterAdminInviteMessage.fromObject(message.inviteAdmin)
    } else if ('requestPayment' in message) {   	
-       m.requestPaymentMessage = WAProto.Message.RequestPaymentMessage.fromObject({ 
-              ...message.requestPayment,                  
-	          expiryTimestamp: message.requestPayment.expiry,
-              amount1000: message.requestPayment.amount,
-              currencyCodeIso4217: message.requestPayment.currency,
-              requestFrom: message.requestPayment.from,
-		      noteMessage: message.requestPayment.note,
-              background: message.requestPayment.background,
+       m.requestPaymentMessage = WAProto.Message.RequestPaymentMessage.fromObject({
+	       expiryTimestamp: message.requestPayment.expiry,
+           amount1000: message.requestPayment.amount,
+           currencyCodeIso4217: message.requestPayment.currency,
+           requestFrom: message.requestPayment.from,
+		   noteMessage: {
+		       extendedTextMessage: {
+		           text: message.requestPayment.note,
+		           contextInfo: message.contextInfo
+		       }
+		   },
+           background: message.requestPayment.background ?? null,
        })
    } else if('sharePhoneNumber' in message) {
 		m.protocolMessage = {
@@ -627,17 +631,51 @@ export const generateWAMessageContent = async(
 	          ...message,
 	       }	       
 	   }
+	   
+	   if('header' in message && !!message.header) {
+	       let media = {};
+	       if(message.header.location) {
+	           media = {
+	              locationMessage: WAProto.Message.LocationMessage.fromObject(message.header.location)
+	           }
+	       } else if(message.header.product) {
+	          const { imageMessage } = await prepareWAMessageMedia(
+			     { image: message.header.product.productImage },
+			     options
+		      )
+		      media = {
+		         productMesage: WAProto.Message.ProductMessage.fromObject({
+			        ...message.header,
+			        product: {
+				       ...message.header.product,
+				       productImage: imageMessage,
+			        }
+		         })
+		      }
+	       } else {
+	           media = {
+	               ...(await prepareWAMessageMedia(
+			            message.header,
+			            options,
+			       ))
+			   }
+	       }
+	       header: interactiveMessage.header = {
+	           hasMediaAttachment: media ? true : false,
+	           ...media
+	       }
+	   }
 	   m = { interactiveMessage }
 	}
 
 	if('sections' in message && !!message.sections) {
-		const listMessage: proto.Message.IListMessage = {
+	    const listMessage: proto.Message.IListMessage = {
 			sections: message.sections,
 			buttonText: message.buttonText,
 			title: message.title,
 			footerText: message.footer,
 			description: message.text,
-			listType: proto.Message.ListMessage.ListType.SINGLE_SELECT
+			listType: message.hasOwnProperty("listType") ? message.listType : proto.Message.ListMessage.ListType.PRODUCT_LIST
 		}
 
 		m = { listMessage }
