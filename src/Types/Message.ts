@@ -90,7 +90,7 @@ type Interactiveable = {
     /** add buttons to the message  */
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
     
-    header?: { [_: string]: string };
+    header?: { [_: string]: { [_: string]: string } };
 }
 
 type Editable = {
