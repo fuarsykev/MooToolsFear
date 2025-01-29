@@ -516,7 +516,7 @@ export const generateWAMessageContent = async(
 		   noteMessage: {
 		       extendedTextMessage: {
 		           text: message.requestPayment.note,
-		           contextInfo: message.contextInfo
+		           contextInfo: message?.requestPayment?.contextInfo
 		       }
 		   },
            background: message.requestPayment.background ?? null,
