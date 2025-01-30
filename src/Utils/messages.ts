@@ -508,17 +508,19 @@ export const generateWAMessageContent = async(
    } else if('inviteAdmin' in message) {
        m.newsletterAdminInviteMessage = WAProto.Message.NewsletterAdminInviteMessage.fromObject(message.inviteAdmin)
    } else if ('requestPayment' in message) {  
-       const { stickerMessage } =  await prepareWAMessageMedia(
-	      { sticker: message?.requestPayment?.sticker, ...options },
-		  options
-	   )	
+       const sticker = message?.requestPayment?.sticker ?
+          await prepareWAMessageMedia(
+	       { sticker: message?.requestPayment?.sticker, ...options },
+		   options
+	      )
+	      : null	
        m.requestPaymentMessage = WAProto.Message.RequestPaymentMessage.fromObject({
 	       expiryTimestamp: message.requestPayment.expiry,
            amount1000: message.requestPayment.amount,
            currencyCodeIso4217: message.requestPayment.currency,
            requestFrom: message.requestPayment.from,
 		   noteMessage: {
-		       stickerMessage: message.requestPayment.sticker ? stickerMessage : null,
+		       stickerMessage: sticker ? sticker.stickerMessage : null,
 		       extendedTextMessage: {
 		          text: message.requestPayment.note,
 		          contextInfo: message?.requestPayment?.contextInfo,
