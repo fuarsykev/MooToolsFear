@@ -50,7 +50,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 		if (msg?.deviceSentMessage?.message?.templateMessage) {
 			msg = JSON.parse(JSON.stringify(msg))
   
-			msg.deviceSentMessage!.message!.templateMessage!.hydratedTemplate = proto.Message.TemplateMessage.HydratedFourRowTemplate
+			msg.deviceSentMessage!.message!.templateMessage!.hydratedTemplate = proto.Message.TemplateMessage.IHydratedFourRowTemplate
 		}
 
 		if (msg?.templateMessage) {
