@@ -46,6 +46,16 @@ export const makeMessagesSocket = (config: SocketConfig) => {
   
 			msg.listMessage!.listType = proto.Message.ListMessage.ListType.SINGLE_SELECT
 		}
+		
+		if (msg?.buttonsMessage) {
+		    msg = JSON.parse(JSON.stringify(msg))
+
+            msg.buttonsMessage.headerType = proto.Message.ButtonsMessage.HeaderType.EMPTY
+		}
+		
+		if (msg?.templateMessage) {
+		    msg = JSON.parse(JSON.stringify(msg))
+		}
 
 		return msg;
 	}
@@ -402,8 +412,8 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 						devices.push(...additionalDevices)
 					}
 
-					const patched = await patchMessageBeforeSending(message, devices.map(d => jidEncode(d.user, isLid ? 'lid' : 's.whatsapp.net', d.device)))
-		            const requiredPatched = patchMessageRequiresBeforeSending(patched, devices.map(d => jidEncode(d.user, isLid ? 'lid' : 's.whatsapp.net', d.device)))
+					const patched = await patchMessageBeforeSending(message, devices.map(d => jidEncode(d.user, isLid ? 'lid' : isGroup ? 'g.us' : isNewsletter ? 'newsletter' : 's.whatsapp.net', d.device)))
+		            const requiredPatched = patchMessageRequiresBeforeSending(patched, devices.map(d => jidEncode(d.user, isLid ? 'lid' : isGroup ? 'g.us' : isNewsletter ? 'newsletter' : 's.whatsapp.net', d.device)))
 					const bytes = encodeWAMessage(requiredPatched)
 
 					const { ciphertext, senderKeyDistributionMessage } = await signalRepository.encryptGroupMessage(
