@@ -49,6 +49,8 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 		
 		if (msg?.templateMessage) {
 		    msg = JSON.parse(JSON.stringify(msg))
+		    
+		    msg.templateMessage.hydratedTemplate = proto.Message.TemplateMessage.HydratedTemplate
 		}
 
 		return msg;
@@ -421,7 +423,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 					const senderKeyJids: string[] = []
 					// ensure a connection is established with every device
 					for(const { user, device } of devices) {
-						const jid = jidEncode(user, isLid ? 'lid' : 's.whatsapp.net', device)
+						const jid = jidEncode(user, isLid ? 'lid' : isGroup ? 'g.us' : isNewsletter ? 'newsletter' : 's.whatsapp.net', device)
 						if(!senderKeyMap[jid] || !!participant) {
 							senderKeyJids.push(jid)
 							// store that this person has had the sender keys sent to them
@@ -569,26 +571,26 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 				if(additionalNodes && additionalNodes.length > 0) {
                       (stanza.content as BinaryNode[]).push(...additionalNodes);
                 } else {
-                   if((isJidGroup(jid) || isJidUser(jid)) && (message?.viewOnceMessage?.message?.interactiveMessage || message?.viewOnceMessageV2?.message?.interactiveMessage || message?.viewOnceMessageV2Extension?.message?.interactiveMessage || message?.interactiveMessage) || (message?.viewOnceMessage?.message?.buttonsMessage || message?.viewOnceMessageV2?.message?.buttonsMessage || message?.viewOnceMessageV2Extension?.message?.buttonsMessage || message?.buttonsMessage)) {
-                      (stanza.content as BinaryNode[]).push({
-						tag: 'biz',
-						attrs: {},
-					    content: [{
-							tag: 'interactive',
-							attrs: {
-				   				type: 'native_flow',
-			      				v: '1'
-							},
-							content: [{
-			   					tag: 'native_flow',
-			   					attrs: { 
-			   					   name: 'quick_reply',
-			   				    }
-							}]
-    					}]
-				    });
-				  }
-               }
+                    if((isJidGroup(jid) || isJidUser(jid)) && (message?.viewOnceMessage?.message?.interactiveMessage || message?.viewOnceMessageV2?.message?.interactiveMessage || message?.viewOnceMessageV2Extension?.message?.interactiveMessage || message?.interactiveMessage) || (message?.viewOnceMessage?.message?.buttonsMessage || message?.viewOnceMessageV2?.message?.buttonsMessage || message?.viewOnceMessageV2Extension?.message?.buttonsMessage || message?.buttonsMessage)) {
+                       (stanza.content as BinaryNode[]).push({
+						  tag: 'biz',
+						  attrs: {},
+					      content: [{
+							  tag: 'interactive',
+						  	  attrs: {
+				   				  type: 'native_flow',
+			      				  v: '1'
+							  },
+							  content: [{
+			   					  tag: 'native_flow',
+			   					  attrs: { 
+			   					     name: 'quick_reply',
+			   				      }
+							  }]
+    					  }]
+				       });
+				    }
+                }
 
 				const buttonType = getButtonType(message)
 				if(buttonType) {
