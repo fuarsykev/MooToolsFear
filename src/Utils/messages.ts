@@ -514,18 +514,30 @@ export const generateWAMessageContent = async(
 		   options
 	      )
 	      : null	
+	   const notes = {}
+	   if(message?.requestPayment?.sticker) {
+	      notes = {
+	          stickerMessage: {
+	             ...sticker.stickerMessage,
+	             contextInfo: message?.requestPayment?.contextInfo
+	          }
+	      }
+	   } else if(message.requestPayment.note) {
+	      notes = {
+	          extendedTextMessage: {
+		          text: message.requestPayment.note,
+		          contextInfo: message?.requestPayment?.contextInfo,
+		      }
+	      }
+	   } else {
+	      throw new Boom('Invalid media type', { statusCode: 400 })
+	   }
        m.requestPaymentMessage = WAProto.Message.RequestPaymentMessage.fromObject({
 	       expiryTimestamp: message.requestPayment.expiry,
            amount1000: message.requestPayment.amount,
            currencyCodeIso4217: message.requestPayment.currency,
            requestFrom: message.requestPayment.from,
-		   noteMessage: {
-		       stickerMessage: sticker ? sticker.stickerMessage : null,
-		       extendedTextMessage: {
-		          text: message.requestPayment.note,
-		          contextInfo: message?.requestPayment?.contextInfo,
-		       }
-		   },
+		   noteMessage: { ...notes },
            background: message.requestPayment.background ?? null,
        })
    } else if('sharePhoneNumber' in message) {
