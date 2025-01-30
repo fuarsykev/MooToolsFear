@@ -47,10 +47,16 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 			msg.listMessage!.listType = proto.Message.ListMessage.ListType.SINGLE_SELECT
 		}
 		
+		if (msg?.deviceSentMessage?.message?.templateMessage) {
+			msg = JSON.parse(JSON.stringify(msg))
+  
+			msg.deviceSentMessage!.message!.templateMessage!.hydratedTemplate = proto.Message.TemplateMessage.HydratedFourRowTemplate
+		}
+
 		if (msg?.templateMessage) {
 		    msg = JSON.parse(JSON.stringify(msg))
 		    
-		    msg.templateMessage.hydratedTemplate = proto.Message.TemplateMessage.HydratedTemplate
+		    msg?.templateMessage?.hydratedTemplate = proto.Message.TemplateMessage.HydratedFourRowTemplate
 		}
 
 		return msg;
