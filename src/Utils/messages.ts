@@ -519,10 +519,10 @@ export const generateWAMessageContent = async(
            requestFrom: message.requestPayment.from,
 		   noteMessage: {
 		       ...(message?.requestPayment?.sticker
-                  ? stickerMessage,
+                  ? stickerMessage : stickerMessage,
 		          : extendedTextMessage: {
-		            text: message.requestPayment.note,
-		            contextInfo: message?.requestPayment?.contextInfo
+		              text: message.requestPayment.note,
+		              contextInfo: message?.requestPayment?.contextInfo
 		          }
 		       )
 		   },
