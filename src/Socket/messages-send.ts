@@ -49,8 +49,6 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 
 		if (msg?.templateMessage) {
 		    msg = JSON.parse(JSON.stringify(msg))
-		    
-		    msg?.templateMessage?.hydratedTemplate = proto.Message.TemplateMessage.HydratedFourRowTemplate
 		}
 
 		return msg;
