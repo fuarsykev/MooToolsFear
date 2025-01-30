@@ -514,7 +514,7 @@ export const generateWAMessageContent = async(
 		   options
 	      )
 	      : null	
-	   const notes = {}
+	   let notes = {}
 	   if(message?.requestPayment?.sticker) {
 	      notes = {
 	          stickerMessage: {
