@@ -90,7 +90,7 @@ type Interactiveable = {
     /** add buttons to the message  */
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
 
-    header?: Buffer | { url: URL | string } | { stream: Readable };
+    header?: WASendableProduct | WALocationMessage | WAMediaUpload | Uint8Array | undefined | null
     media?: boolean;
 }
 
