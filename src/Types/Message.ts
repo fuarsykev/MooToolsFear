@@ -90,13 +90,12 @@ type Interactiveable = {
     /** add buttons to the message  */
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
     
-    media?: boolean;
-    product?: WASendableProduct | null;
-    location?: WALocationMessage | null;
-    image?: WAMediaUpload | null;
-    video?: WAMediaUpload | null;
-    document?: WAMediaUpload | null;
-    jpegThumbnail?: Buffer | string;
+    product?: WASendableProduct;
+    location?: WALocationMessage;
+    image?: WAMediaUpload;
+    video?: WAMediaUpload;
+    document?: WAMediaUpload;
+    jpegThumbnail?: string;
     mimetype?: string;
     fileName?: string;
     /** add contextInfo to the message */
