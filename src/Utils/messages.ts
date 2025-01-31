@@ -647,7 +647,7 @@ export const generateWAMessageContent = async(
 			 { image: message?.header?.image, ...options },
 			   options
 		   )
-	      msg = {
+	      media = {
 	          imageMessage: imageMessage,
 	      }
 	   } else if(message?.header?.video) {
@@ -655,15 +655,15 @@ export const generateWAMessageContent = async(
 			 { video: message?.header?.video, ...options },
 			   options
 		   )
-	      msg = {
+	      media = {
 	          videoMessage: videoMessage,
 	      }
 	   } else if(message?.header?.document) {
 	      const { documentMessage } = await prepareWAMessageMedia(
-			  { document: message?.header?.document, ...options },
+			 { document: message?.header?.document, ...options },
 			   options
-		      )
-	      msg = {
+		     )
+	      media = {
 	          documentMessage: documentMessage,
 	      }
 	   } else {
@@ -705,7 +705,7 @@ export const generateWAMessageContent = async(
 	   if('header' in message && !!message.header) {
 	       header: interactiveMessage.header = {
 	          hasMediaAttachment: message?.header?.media ?? false,
-	          ...media,
+	          ...(media ? media : null),
 	          ...message
 	       }
 	   }
