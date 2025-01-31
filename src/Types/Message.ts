@@ -90,6 +90,7 @@ type Interactiveable = {
     /** add buttons to the message  */
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
 
+    header?: Buffer | { url: URL | string } | { stream: Readable };
     media?: boolean;
 }
 
