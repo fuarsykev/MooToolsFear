@@ -659,7 +659,7 @@ export const generateWAMessageContent = async(
 			{ image: message?.product?.productImage },
 			options
 		 )
-		 interactiveMessage.header..productMessage = WAProto.Message.ProductMessage.fromObject({
+		 interactiveMessage.header.productMessage = WAProto.Message.ProductMessage.fromObject({
 			...message,
 			product: {
 				...message.product,
