@@ -652,26 +652,32 @@ export const generateWAMessageContent = async(
 	   }
 	   
 	   if('location' in message && !!message.location) {
-		  interactiveMessage.header.locationMessage = WAProto.Message.LocationMessage.fromObject(message.location)
+		  header: interactiveMessage.header = {
+		      locationMessage: WAProto.Message.LocationMessage.fromObject(message?.location)
+		  }
 		
 	   } else if('product' in message && !!message.product) {
 		 const { imageMessage } = await prepareWAMessageMedia(
 			{ image: message?.product?.productImage },
 			options
 		 )
-		 interactiveMessage.header.productMessage = WAProto.Message.ProductMessage.fromObject({
-			...message,
-			product: {
-				...message.product,
-				productImage: imageMessage,
-			}
-		 })
+		 header: interactiveMessage.header = {
+		    productMessage: WAProto.Message.ProductMessage.fromObject({
+			    ...message,
+			    product: {
+				   ...message?.product,
+				   productImage: imageMessage,
+			    }
+		    })
+		 }
 	   
 	   } else {
-		    interactiveMessage.header = await prepareWAMessageMedia(
-			   message,
-			   options
-		    )
+		    header: interactiveMessage.header = {
+		       ...(await prepareWAMessageMedia(
+			       message,
+			       options
+		       ))
+		    }
 	   }
 	   
        if('contextInfo' in message && !!message.contextInfo) {
