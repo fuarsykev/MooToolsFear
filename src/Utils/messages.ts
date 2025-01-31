@@ -620,7 +620,7 @@ export const generateWAMessageContent = async(
 	if('interactiveButtons' in message && !!message.interactiveButtons) {
 	
 	   const { imageMessage } = await prepareWAMessageMedia(
-			 { image: message.header.productImage },
+			 { image: message?.header?.productImage },
 			 options
 		)
 		   
