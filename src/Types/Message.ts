@@ -89,9 +89,18 @@ type Templatable = {
 type Interactiveable = {
     /** add buttons to the message  */
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
-
-    header?: WASendableProduct | WALocationMessage | WAMediaUpload | Uint8Array | undefined | null
+    
     media?: boolean;
+    product?: WASendableProduct | null;
+    location?: WALocationMessage | null;
+    image?: WAMediaUpload | null;
+    video?: WAMediaUpload | null;
+    document?: WAMediaUpload | null;
+    jpegThumbnail?: Buffer | string;
+    mimetype?: string;
+    fileName?: string;
+    /** add contextInfo to the message */
+    contextInfo?: proto.IContextInfo
 }
 
 type Editable = {
