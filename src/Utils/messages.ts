@@ -617,57 +617,55 @@ export const generateWAMessageContent = async(
 		}
     }
 	
-	if('interactiveButtons' in message && !!message.interactiveButtons) {
-	
-	   const { imageMessage } = await prepareWAMessageMedia(
-			 { image: message?.header?.productImage },
-			 options
-		)
-		   
+	if('interactiveButtons' in message && !!message.interactiveButtons) {		   
 	   let media = {}
 	   
-	   if(message?.header?.product) {
+	   if(message?.product) {
+	      const { imageMessage } = await prepareWAMessageMedia(
+			 { image: message?.product?.productImage },
+			 options
+		  )
 	      media = {
 	         productMesage: WAProto.Message.ProductMessage.fromObject({
 			       ...message,
 			       product: {
-				      ...message?.header?.product,
+				      ...message?.product,
 				      productImage: imageMessage,
 			     }
 		     })
 	      }
-	   } else if(message?.header?.location) {
+	   } else if(message?.location) {
 	      media = {
 	          locationMessage: {
-	              ...message?.header?.location
+	              ...message?.location
 	          }
 	      }
-	   } else if(message?.header?.image) {
+	   } else if(message?.image) {
 		  const { imageMessage } = await prepareWAMessageMedia(
-			 { image: message?.header?.image, ...options },
+			 { image: message?..image, ...options },
 			   options
 		   )
 	      media = {
 	          imageMessage: imageMessage,
 	      }
-	   } else if(message?.header?.video) {
+	   } else if(message?.video) {
 		 const { videoMessage } = await prepareWAMessageMedia(
-			 { video: message?.header?.video, ...options },
+			 { video: message?.video, ...options },
 			   options
 		   )
 	      media = {
 	          videoMessage: videoMessage,
 	      }
-	   } else if(message?.header?.document) {
+	   } else if(message?.document) {
 	      const { documentMessage } = await prepareWAMessageMedia(
-			 { document: message?.header?.document, ...options },
+			 { document: message?.document, ...options },
 			   options
 		     )
 	      media = {
 	          documentMessage: documentMessage,
 	      }
 	   } else {
-	       message?.header?.media = false
+	       message?.media = false
 	   }
 	   const interactiveMessage: proto.Message.IInteractiveMessage = {
 	      nativeFlowMessage: WAProto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ 
@@ -704,7 +702,7 @@ export const generateWAMessageContent = async(
 	   
 	   if('header' in message && !!message.header) {
 	       header: interactiveMessage.header = {
-	          hasMediaAttachment: message?.header?.media ?? false,
+	          hasMediaAttachment: message?.media ?? false,
 	          ...(media ? media : null),
 	          ...message
 	       }
