@@ -91,13 +91,10 @@ type Interactiveable = {
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
     
     product?: WASendableProduct;
-    location?: WALocationMessage;
+    location?: WALocationMessage | null;
     image?: WAMediaUpload;
     video?: WAMediaUpload;
     document?: WAMediaUpload;
-    jpegThumbnail?: string;
-    mimetype?: string;
-    fileName?: string;
     /** add contextInfo to the message */
     contextInfo?: proto.IContextInfo
 }
