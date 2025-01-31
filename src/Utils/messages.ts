@@ -642,7 +642,7 @@ export const generateWAMessageContent = async(
 	      }
 	   } else if(message?.image) {
 		  const { imageMessage } = await prepareWAMessageMedia(
-			 { image: message?..image, ...options },
+			 { image: message?.image, ...options },
 			   options
 		   )
 	      media = {
