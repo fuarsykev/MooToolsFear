@@ -89,9 +89,7 @@ type Templatable = {
 type Interactiveable = {
     /** add buttons to the message  */
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
-    
-    /** add a header to the message */
-    header?: { [key: any]: any } | null | undefined;
+
     media?: boolean;
 }
 
