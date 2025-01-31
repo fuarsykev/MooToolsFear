@@ -91,7 +91,7 @@ type Interactiveable = {
     interactiveButtons?: proto.Message.InteractiveMessage.NativeFlowMessage.NativeFlowButton[]
     
     /** add a header to the message */
-    header?: { [key: string]: any } | null;
+    header?: { [key: any]: any } | null | undefined;
     media?: boolean;
 }
 
