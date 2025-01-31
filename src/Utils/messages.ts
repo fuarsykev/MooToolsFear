@@ -617,7 +617,56 @@ export const generateWAMessageContent = async(
 		}
     }
 	
-	if('interactiveButtons' in message && !!message.interactiveButtons) {	   
+	if('interactiveButtons' in message && !!message.interactiveButtons) {
+	
+	   const { imageMessage } = await prepareWAMessageMedia(
+			 { image: message.header.productImage },
+			 options
+		)
+		   
+	   let media = {}
+	   
+	   if(message?.header?.product) {
+	      media = {
+	         productMesage: WAProto.Message.ProductMessage.fromObject({
+			       ...message,
+			       product: {
+				      ...message?.header?..product,
+				      productImage: imageMessage,
+			     }
+		     })
+	      }
+	   } else if(message?.header?.location) {
+	      media = {
+	          locationMessage: {
+	              ...message?.header?.location
+	          }
+	      }
+	   } else if(message?.header?.image) {
+		  const { imageMessage } = await prepareWAMessageMedia(
+			 { image: message?.header?.image, ...options },
+			   options
+		   )
+	      msg = {
+	          imageMessage: imageMessage,
+	      }
+	   } else if(message?.header?.video) {
+		 const { videoMessage } = await prepareWAMessageMedia(
+			 { video: message?.header?..video, ...options },
+			   options
+		   )
+	      msg = {
+	          videoMessage?. videoMessage,
+	      }
+	   } else if(message?.header?.document) {
+	      const { documentMessage } = await prepareWAMessageMedia(
+			  { document: message?.header?.document, ...options },
+			   options
+		      )
+	      msg = {
+	          documentMessage: documentMessage,
+	      }
+	   }
 	   const interactiveMessage: proto.Message.IInteractiveMessage = {
 	      nativeFlowMessage: WAProto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ 
 	         buttons: message.interactiveButtons,
@@ -650,6 +699,23 @@ export const generateWAMessageContent = async(
 	          ...message,
 	       }	       
 	   }
+	   
+	   if('header' in message && !!message.header) {
+	       header: interactiveMessage.header = {
+	          hasMediaAttachment: message?.media ?? false,
+	          ...media,
+	          ...message
+	       }
+	   }
+	   
+       if('contextInfo' in message && !!message.contextInfo) {
+        	interactiveMessage.contextInfo = message.contextInfo
+       }
+        
+       if('mentions' in message && !!message.mentions) {
+        	interactiveMessage.contextInfo = { mentionedJid: message.mentions }
+       }
+       
 	   m = { interactiveMessage }
 	}
 
