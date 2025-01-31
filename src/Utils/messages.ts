@@ -631,7 +631,7 @@ export const generateWAMessageContent = async(
 	         productMesage: WAProto.Message.ProductMessage.fromObject({
 			       ...message,
 			       product: {
-				      ...message?.header?..product,
+				      ...message?.header?.product,
 				      productImage: imageMessage,
 			     }
 		     })
@@ -652,11 +652,11 @@ export const generateWAMessageContent = async(
 	      }
 	   } else if(message?.header?.video) {
 		 const { videoMessage } = await prepareWAMessageMedia(
-			 { video: message?.header?..video, ...options },
+			 { video: message?.header?.video, ...options },
 			   options
 		   )
 	      msg = {
-	          videoMessage?. videoMessage,
+	          videoMessage: videoMessage,
 	      }
 	   } else if(message?.header?.document) {
 	      const { documentMessage } = await prepareWAMessageMedia(
@@ -666,6 +666,8 @@ export const generateWAMessageContent = async(
 	      msg = {
 	          documentMessage: documentMessage,
 	      }
+	   } else {
+	       message?.header?.media = false
 	   }
 	   const interactiveMessage: proto.Message.IInteractiveMessage = {
 	      nativeFlowMessage: WAProto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ 
@@ -702,7 +704,7 @@ export const generateWAMessageContent = async(
 	   
 	   if('header' in message && !!message.header) {
 	       header: interactiveMessage.header = {
-	          hasMediaAttachment: message?.media ?? false,
+	          hasMediaAttachment: message?.header?.media ?? false,
 	          ...media,
 	          ...message
 	       }
