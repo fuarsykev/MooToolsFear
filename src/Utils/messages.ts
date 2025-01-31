@@ -591,7 +591,7 @@ export const generateWAMessageContent = async(
 		m = { buttonsMessage }
 	} else if('templateButtons' in message && !!message.templateButtons) {
 		const msg: proto.Message.TemplateMessage.IHydratedFourRowTemplate = {
-			hydratedButtons: message.hasOwnProperty("templateButtons") ? message.templateButtons : proto.Message.TemplateMessage.HydratedFourRowTemplate.hydratedButtons!.map(b => ({ ...b }))
+			hydratedButtons: message.hasOwnProperty("templateButtons") ? message.templateButtons : message.templateButtons
 		}
 
 		if('text' in message) {
