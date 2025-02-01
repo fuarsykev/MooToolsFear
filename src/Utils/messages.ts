@@ -625,13 +625,13 @@ export const generateWAMessageContent = async(
 	   })
 	   
 	   if('text' in message) {
-	       body: interactiveMessage.Body.fromObject({ 
+	       body: interactiveMessage.body.fromObject({ 
 	           text: message.text
 	       })
 	   } else {
 	   
 	      if('caption' in message) {
-	          body: interactiveMessage.Body.fromObject({
+	          body: interactiveMessage.body.fromObject({
 	              text: message.caption
 	          })
 	      }
@@ -639,29 +639,31 @@ export const generateWAMessageContent = async(
 	   }
 	   
 	   if('footer' in message && !!message.footer) {
-		   footer: interactiveMessage.Footer.fromObject({
+		   footer: interactiveMessage.footer.fromObject({
 		      text: message.footer
 		   })
 	   }
 	   
 	   if('title' in message && !!message.title) {
-	       header: interactiveMessage.Header.fromObject({
+	       header: interactiveMessage.header.fromObject({
 	          title: message.title,
 	          ...message,
 	       })	       
 	   }
 	   
 	   if('location' in message && !!message.location) {
-		  header: interactiveMessage.Header.fromObject({
+		  header: interactiveMessage.header.fromObject({
 		      locationMessage: WAProto.Message.LocationMessage.fromObject(message?.location)
 		  })
-		
+		  
+		  Object.assign(interactiveMessage.header, m)
+		  		
 	   } else if('product' in message && !!message.product) {
 		 const { imageMessage } = await prepareWAMessageMedia(
 			{ image: message?.product?.productImage },
 			options
 		 )
-		 header: interactiveMessage.Header.fromObject({
+		 header: interactiveMessage.header.fromObject({
 		    productMessage: WAProto.Message.ProductMessage.fromObject({
 			    ...message,
 			    product: {
@@ -672,7 +674,7 @@ export const generateWAMessageContent = async(
 		 })
 	   
 	   } else {
-		    header: interactiveMessage.Header.fromObject({
+		    header: interactiveMessage.header.fromObject({
 		       ...(await prepareWAMessageMedia(
 			       message,
 			       options
