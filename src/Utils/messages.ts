@@ -618,69 +618,40 @@ export const generateWAMessageContent = async(
     }
 	
 	if('interactiveButtons' in message && !!message.interactiveButtons) {
-	   const interactiveMessage = WAProto.Message.InteractiveMessage.fromObject({
+	   const interactiveMessage: proto.Message.IInteractiveMessage = {
 	      nativeFlowMessage: WAProto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ 
 	         buttons: message.interactiveButtons,
 	      })
-	   })
+	   }
 	   
 	   if('text' in message) {
-	       body: interactiveMessage.body.fromObject({ 
+	       body: interactiveMessage.body = { 
 	           text: message.text
-	       })
+	       }
 	   } else {
 	   
 	      if('caption' in message) {
-	          body: interactiveMessage.body.fromObject({
+	          body: interactiveMessage.body = {
 	              text: message.caption
-	          })
+	          }
 	      }
 
 	   }
 	   
 	   if('footer' in message && !!message.footer) {
-		   footer: interactiveMessage.footer.fromObject({
+		   footer: interactiveMessage.footer = {
 		      text: message.footer
-		   })
+		   }
 	   }
 	   
 	   if('title' in message && !!message.title) {
-	       header: interactiveMessage.header.fromObject({
+	       header: interactiveMessage.header = {
 	          title: message.title,
 	          ...message,
-	       })	       
-	   }
-	   
-	   if('location' in message && !!message.location) {
-		  header: interactiveMessage.header.fromObject({
-		      locationMessage: WAProto.Message.LocationMessage.fromObject(message?.location)
-		  })
-		  
-		  Object.assign(interactiveMessage.header, m)
-		  		
-	   } else if('product' in message && !!message.product) {
-		 const { imageMessage } = await prepareWAMessageMedia(
-			{ image: message?.product?.productImage },
-			options
-		 )
-		 header: interactiveMessage.header.fromObject({
-		    productMessage: WAProto.Message.ProductMessage.fromObject({
-			    ...message,
-			    product: {
-				   ...message?.product,
-				   productImage: imageMessage,
-			    }
-		    })
-		 })
-	   
-	   } else {
-		    header: interactiveMessage.header.fromObject({
-		       ...(await prepareWAMessageMedia(
-			       message,
-			       options
-		       ))
-		    })
-	   }
+	          hasMediaAttachment: message?.media ?? false,
+	       }
+		  Object.assign(interactiveMessage.header, m)	       
+	   }		  
 	   
        if('contextInfo' in message && !!message.contextInfo) {
         	interactiveMessage.contextInfo = message.contextInfo
