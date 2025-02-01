@@ -618,50 +618,50 @@ export const generateWAMessageContent = async(
     }
 	
 	if('interactiveButtons' in message && !!message.interactiveButtons) {
-	   const interactiveMessage: proto.Message.IInteractiveMessage = {
+	   const interactiveMessage: WAProto.Message.InteractiveMessage.fromObject({
 	      nativeFlowMessage: WAProto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ 
 	         buttons: message.interactiveButtons,
 	      })
-	   }
+	   })
 	   
 	   if('text' in message) {
-	       body: interactiveMessage.body = { 
+	       body: interactiveMessage.Body.fromObject({ 
 	           text: message.text
-	       }
+	       })
 	   } else {
 	   
 	      if('caption' in message) {
-	          body: interactiveMessage.body = {
+	          body: interactiveMessage.Body.fromObject({
 	              text: message.caption
-	          }
+	          })
 	      }
 
 	   }
 	   
 	   if('footer' in message && !!message.footer) {
-		   footer: interactiveMessage.footer = {
+		   footer: interactiveMessage.Footer.fromObject({
 		      text: message.footer
-		   }
+		   })
 	   }
 	   
 	   if('title' in message && !!message.title) {
-	       header: interactiveMessage.header = {
+	       header: interactiveMessage.Header.fromObject({
 	          title: message.title,
 	          ...message,
-	       }	       
+	       })	       
 	   }
 	   
 	   if('location' in message && !!message.location) {
-		  header: interactiveMessage.header = {
+		  header: interactiveMessage.Header.fromObject({
 		      locationMessage: WAProto.Message.LocationMessage.fromObject(message?.location)
-		  }
+		  })
 		
 	   } else if('product' in message && !!message.product) {
 		 const { imageMessage } = await prepareWAMessageMedia(
 			{ image: message?.product?.productImage },
 			options
 		 )
-		 header: interactiveMessage.header = {
+		 header: interactiveMessage.Header.fromObject({
 		    productMessage: WAProto.Message.ProductMessage.fromObject({
 			    ...message,
 			    product: {
@@ -669,15 +669,15 @@ export const generateWAMessageContent = async(
 				   productImage: imageMessage,
 			    }
 		    })
-		 }
+		 })
 	   
 	   } else {
-		    header: interactiveMessage.header = {
+		    header: interactiveMessage.Header.fromObject({
 		       ...(await prepareWAMessageMedia(
 			       message,
 			       options
 		       ))
-		    }
+		    })
 	   }
 	   
        if('contextInfo' in message && !!message.contextInfo) {
