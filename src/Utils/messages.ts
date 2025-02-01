@@ -618,7 +618,7 @@ export const generateWAMessageContent = async(
     }
 	
 	if('interactiveButtons' in message && !!message.interactiveButtons) {
-	   const interactiveMessage: WAProto.Message.InteractiveMessage.fromObject({
+	   const interactiveMessage = WAProto.Message.InteractiveMessage.fromObject({
 	      nativeFlowMessage: WAProto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ 
 	         buttons: message.interactiveButtons,
 	      })
